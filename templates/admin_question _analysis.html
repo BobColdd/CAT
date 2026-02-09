@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Analysis - Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .analysis-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .questions-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .table-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+            background: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+        }
+        
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+        
+        .table-row:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .table-row:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .success-rate-bar {
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .success-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            border-radius: 10px;
+        }
+        
+        .failure-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+            border-radius: 10px;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        
+        .rate-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            color: #2c3e50;
+            line-height: 20px;
+            font-size: 0.85em;
+        }
+        
+        .difficulty-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        .difficulty-easy {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .difficulty-medium {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .difficulty-hard {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .difficulty-very-hard {
+            background-color: #721c24;
+            color: white;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .wrong-answers {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .wrong-answer-item {
+            display: inline-block;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.85em;
+        }
+        
+        .filter-options {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .filter-group label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        @media (max-width: 1200px) {
+            .table-header,
+            .table-row {
+                grid-template-columns: 2fr 1fr 1fr 1fr;
+            }
+            
+            .table-header div:nth-child(5),
+            .table-header div:nth-child(6),
+            .table-row div:nth-child(5),
+            .table-row div:nth-child(6) {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .table-header,
+            .table-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .table-header div,
+            .table-row div {
+                display: block;
+            }
+            
+            .action-buttons {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="analysis-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>📊 Question Difficulty Analysis</h1>
+                    <p>Identify which questions students are struggling with</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid white;">
+                        ← Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" style="color: #3498db;">
+                    {{ total_questions }}
+                </div>
+                <div class="stat-label">Total Questions</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-value" style="color: #9b59b6;">
+                    {{ questions_with_data }}
+                </div>
+                <div class="stat-label">Questions Attempted</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-value" style="color: #27ae60;">
+                    {{ "%.1f"|format(overall_success_rate) }}%
+                </div>
+                <div class="stat-label">Overall Success Rate</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-value" style="color: #e74c3c;">
+                    {{ total_responses }}
+                </div>
+                <div class="stat-label">Total Responses</div>
+            </div>
+        </div>
+        
+        <div class="filter-options">
+            <h3 style="margin-bottom: 15px; color: #2c3e50;">Filter Options</h3>
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="difficulty-filter">Difficulty:</label>
+                    <select id="difficulty-filter" onchange="filterQuestions()">
+                        <option value="all">All Difficulties</option>
+                        <option value="easy">Easy (≥80% success)</option>
+                        <option value="medium">Medium (60-79%)</option>
+                        <option value="hard">Hard (40-59%)</option>
+                        <option value="very-hard">Very Hard (<40%)</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="category-filter">Category:</label>
+                    <select id="category-filter" onchange="filterQuestions()">
+                        <option value="all">All Categories</option>
+                        <option value="Shortcuts">Shortcuts</option>
+                        <option value="Interface">Interface</option>
+                        <option value="Formatting">Formatting</option>
+                        <option value="Basics">Basics</option>
+                        <option value="Proofing">Proofing</option>
+                        <option value="View">View</option>
+                        <option value="Security">Security</option>
+                        <option value="Collaboration">Collaboration</option>
+                        <option value="Review">Review</option>
+                        <option value="References">References</option>
+                        <option value="Layout">Layout</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="attempts-filter">Minimum Attempts:</label>
+                    <input type="number" id="attempts-filter" min="0" value="0" onchange="filterQuestions()">
+                </div>
+            </div>
+        </div>
+        
+        {% if questions %}
+        <div class="questions-table">
+            <div class="table-header">
+                <div>Question</div>
+                <div>Category</div>
+                <div>Attempts</div>
+                <div>Success Rate</div>
+                <div>Difficulty</div>
+                <div>Actions</div>
+            </div>
+            
+            {% for question_id, stats in questions %}
+            <div class="table-row" 
+                 data-success-rate="{{ stats.success_rate }}" 
+                 data-category="{{ stats.category }}"
+                 data-attempts="{{ stats.total_attempts }}">
+                <div>
+                    <div style="font-weight: 500; margin-bottom: 5px;">
+                        {{ stats.question_text|truncate(100) }}
+                    </div>
+                    <div class="wrong-answers">
+                        {% if stats.top_wrong_answers %}
+                        <span style="color: #e74c3c; font-weight: bold;">Common wrong answers:</span>
+                        {% for answer, count in stats.top_wrong_answers %}
+                        <span class="wrong-answer-item">{{ answer }} ({{ count }})</span>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <span style="background: #e3f2fd; padding: 4px 10px; border-radius: 15px; font-size: 0.85em;">
+                        {{ stats.category }}
+                    </span>
+                </div>
+                <div>{{ stats.total_attempts }}</div>
+                <div>
+                    <div class="success-rate-bar">
+                        <div class="success-fill" style="width: {{ stats.success_rate }}%;"></div>
+                        <div class="failure-fill" style="width: {{ 100 - stats.success_rate }}%;"></div>
+                        <div class="rate-text">{{ "%.1f"|format(stats.success_rate) }}%</div>
+                    </div>
+                </div>
+                <div>
+                    {% if stats.success_rate >= 80 %}
+                    <span class="difficulty-badge difficulty-easy">Easy</span>
+                    {% elif stats.success_rate >= 60 %}
+                    <span class="difficulty-badge difficulty-medium">Medium</span>
+                    {% elif stats.success_rate >= 40 %}
+                    <span class="difficulty-badge difficulty-hard">Hard</span>
+                    {% else %}
+                    <span class="difficulty-badge difficulty-very-hard">Very Hard</span>
+                    {% endif %}
+                </div>
+                <div class="action-buttons">
+                    <a href="{{ url_for('admin_failed_questions_detail', question_id=question_id) }}" 
+                       class="btn" 
+                       style="padding: 6px 12px; font-size: 0.9em;">
+                        📊 Details
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+            <h3 style="color: #2c3e50; margin-bottom: 15px;">📈 Analysis Summary</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div>
+                    <h4 style="color: #e74c3c; margin-bottom: 10px;">⚠️ Top 3 Most Difficult Questions:</h4>
+                    <ol style="padding-left: 20px;">
+                        {% for question_id, stats in questions[:3] %}
+                        <li style="margin-bottom: 10px;">
+                            <strong>{{ stats.question_text|truncate(60) }}</strong><br>
+                            <small>Success Rate: {{ "%.1f"|format(stats.success_rate) }}% | 
+                                   Category: {{ stats.category }} | 
+                                   Attempts: {{ stats.total_attempts }}</small>
+                        </li>
+                        {% endfor %}
+                    </ol>
+                </div>
+                
+                <div>
+                    <h4 style="color: #27ae60; margin-bottom: 10px;">✅ Top 3 Easiest Questions:</h4>
+                    <ol style="padding-left: 20px;">
+                        {% for question_id, stats in questions[-3:]|reverse %}
+                        <li style="margin-bottom: 10px;">
+                            <strong>{{ stats.question_text|truncate(60) }}</strong><br>
+                            <small>Success Rate: {{ "%.1f"|format(stats.success_rate) }}% | 
+                                   Category: {{ stats.category }} | 
+                                   Attempts: {{ stats.total_attempts }}</small>
+                        </li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h3>No Question Data Available</h3>
+            <p>Students haven't taken any tests yet. Check back after some tests have been completed.</p>
+        </div>
+        {% endif %}
+        
+        <div class="action-buttons" style="margin-top: 30px; justify-content: center;">
+            <a href="{{ url_for('admin_category_analysis') }}" class="btn btn-secondary">
+                📋 View Category Analysis
+            </a>
+            <a href="{{ url_for('admin_student_analysis') }}" class="btn btn-secondary">
+                👥 View Student Analysis
+            </a>
+            <a href="{{ url_for('admin_export_data') }}" class="btn">
+                📥 Export Data
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        function filterQuestions() {
+            const difficultyFilter = document.getElementById('difficulty-filter').value;
+            const categoryFilter = document.getElementById('category-filter').value;
+            const attemptsFilter = parseInt(document.getElementById('attempts-filter').value) || 0;
+            
+            const rows = document.querySelectorAll('.table-row');
+            
+            rows.forEach(row => {
+                const successRate = parseFloat(row.dataset.successRate);
+                const category = row.dataset.category;
+                const attempts = parseInt(row.dataset.attempts);
+                
+                let show = true;
+                
+                // Apply difficulty filter
+                if (difficultyFilter !== 'all') {
+                    if (difficultyFilter === 'easy' && successRate < 80) show = false;
+                    if (difficultyFilter === 'medium' && (successRate >= 80 || successRate < 60)) show = false;
+                    if (difficultyFilter === 'hard' && (successRate >= 60 || successRate < 40)) show = false;
+                    if (difficultyFilter === 'very-hard' && successRate >= 40) show = false;
+                }
+                
+                // Apply category filter
+                if (categoryFilter !== 'all' && category !== categoryFilter) {
+                    show = false;
+                }
+                
+                // Apply attempts filter
+                if (attempts < attemptsFilter) {
+                    show = false;
+                }
+                
+                row.style.display = show ? 'grid' : 'none';
+            });
+        }
+        
+        // Initialize filters
+        document.addEventListener('DOMContentLoaded', filterQuestions);
+    </script>
+</body>
+</html>

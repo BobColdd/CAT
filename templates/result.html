@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="result-header">
+            <h1>Test Results</h1>
+        </div>
+        
+        <div class="result-card">
+            <div class="score-display">
+                <div class="score-circle">
+                    <h2>{{ "%.1f"|format(result.score) }}%</h2>
+                </div>
+                <div class="score-details">
+                    <h3>Test Summary</h3>
+                    <p><strong>Student:</strong> {{ result.student.name }}</p>
+                    <p><strong>Student ID:</strong> {{ result.student.student_id }}</p>
+                    <p><strong>Class:</strong> {{ result.student.class_name }}</p>
+                    <p><strong>Date:</strong> {{ result.completed_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                </div>
+            </div>
+            
+            <div class="performance-metrics">
+                <div class="metric">
+                    <h3>{{ result.correct_answers }}</h3>
+                    <p>Correct Answers</p>
+                </div>
+                <div class="metric">
+                    <h3>{{ result.total_questions }}</h3>
+                    <p>Total Questions</p>
+                </div>
+                <div class="metric">
+                    <h3>{{ (result.time_taken // 60)|int }}:{{ "%02d"|format(result.time_taken % 60) }}</h3>
+                    <p>Time Taken</p>
+                </div>
+            </div>
+            
+            <div class="performance-evaluation">
+                <h3>Performance Evaluation</h3>
+                {% if result.score >= 80 %}
+                    <div class="performance-excellent">
+                        <h4>Excellent! 🎉</h4>
+                        <p>You have excellent Microsoft Word skills. Keep up the good work!</p>
+                    </div>
+                {% elif result.score >= 60 %}
+                    <div class="performance-good">
+                        <h4>Good Job! 👍</h4>
+                        <p>You have a good understanding of Microsoft Word. Consider practicing more to improve.</p>
+                    </div>
+                {% elif result.score >= 40 %}
+                    <div class="performance-average">
+                        <h4>Average ⚠️</h4>
+                        <p>You have basic Microsoft Word knowledge. More practice is recommended.</p>
+                    </div>
+                {% else %}
+                    <div class="performance-needs-improvement">
+                        <h4>Needs Improvement 📚</h4>
+                        <p>Consider reviewing Microsoft Word basics and taking more practice tests.</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{{ url_for('index') }}" class="btn">Take Another Test</a>
+                <a href="{{ url_for('admin_login') }}" class="btn btn-secondary">Teacher View</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

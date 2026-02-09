@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word CAT System - Registration</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Microsoft Word Computerized Adaptive Test</h1>
+            <p>Please register to take the test</p>
+        </div>
+        
+        <div class="registration-form">
+            <h2>Student Registration</h2>
+            <form action="{{ url_for('register') }}" method="POST">
+                <div class="form-group">
+                    <label for="student_id">Student ID:</label>
+                    <input type="text" id="student_id" name="student_id" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="name">Full Name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="class_name">Class:</label>
+                    <input type="text" id="class_name" name="class_name" required>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn">Start Test</button>
+                </div>
+            </form>
+            
+            <div class="test-info">
+                <h3>Test Information:</h3>
+                <ul>
+                    <li>30 multiple-choice questions</li>
+                    <li>Time limit: 45 minutes</li>
+                    <li>Immediate results after submission</li>
+                    <li>Covers Microsoft Word basics and shortcuts</li>
+                </ul>
+            </div>
+            
+            <div class="admin-link">
+                <p>Are you the teacher? <a href="{{ url_for('admin_login') }}">Click here for admin access</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

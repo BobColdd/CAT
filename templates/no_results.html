@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No Results Found</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            max-width: 600px;
+            margin: 100px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .empty-icon {
+            font-size: 5em;
+            margin-bottom: 30px;
+            color: #bdc3c7;
+        }
+        
+        .empty-state h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="empty-state">
+            <div class="empty-icon">📚</div>
+            <h1>No Test Results Found</h1>
+            <p>
+                It looks like you haven't taken any tests yet. 
+                Take your first test to demonstrate your Microsoft Word skills 
+                and track your learning progress.
+            </p>
+            <div class="action-buttons">
+                <a href="{{ url_for('index') }}" class="btn">Take Your First Test</a>
+                <a href="{{ url_for('my_results') }}" class="btn btn-secondary">View All Tests</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

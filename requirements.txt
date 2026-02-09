@@ -1,0 +1,43 @@
+# Core Flask Framework
+Flask==2.3.3
+Werkzeug==2.3.7
+Jinja2==3.1.2
+
+# Database
+Flask-SQLAlchemy==3.0.5
+SQLAlchemy==2.0.23
+
+# Production Server
+gunicorn==20.1.0
+
+# Security
+flask-talisman==0.8.1
+python-dotenv==1.0.0
+
+# Compression (for slower networks in Kenya)
+flask-compress==1.14
+
+# Database Drivers (choose based on your setup)
+# For SQLite (Default - included in Python, no extra package needed)
+# For PostgreSQL (if using cPanel PostgreSQL)
+psycopg2-binary==2.9.6
+# For MySQL (if using cPanel MySQL)
+# mysqlclient==2.1.1
+# pymysql==1.0.3
+
+# Data Processing
+python-dateutil==2.8.2
+
+# JSON handling
+simplejson==3.19.1
+
+# Statistics (for admin analytics)
+statistics==1.0.3.5
+
+# Caching (optional, for performance)
+Flask-Caching==2.0.2
+
+# Development Tools (optional, for debugging)
+blinker==1.6.2
+click==8.1.7
+itsdangerous==2.1.2

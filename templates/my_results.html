@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Test History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .results-history {
+            margin-top: 30px;
+        }
+        
+        .result-item {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border-left: 5px solid #3498db;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .result-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .result-info {
+            flex-grow: 1;
+            min-width: 300px;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .result-date {
+            color: #666;
+            font-size: 0.95em;
+        }
+        
+        .result-score {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .score-high { color: #27ae60; }
+        .score-good { color: #f39c12; }
+        .score-average { color: #3498db; }
+        .score-low { color: #e74c3c; }
+        
+        .result-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .detail-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .detail-value {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .detail-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .result-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .empty-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            color: #bdc3c7;
+        }
+        
+        .filter-options {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .filter-group label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .filter-group select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        @media (max-width: 768px) {
+            .result-item {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .result-info {
+                min-width: 100%;
+            }
+            
+            .result-actions {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 My Test History</h1>
+            <p>View all your past test results and track your progress</p>
+        </div>
+        
+        <div class="action-buttons" style="margin-bottom: 30px;">
+            <a href="{{ url_for('index') }}" class="btn">🔄 Take New Test</a>
+            {% if results %}
+                <a href="{{ url_for('my_result') }}" class="btn btn-secondary">📊 Latest Result</a>
+            {% endif %}
+        </div>
+        
+        {% if results %}
+        <div class="stats-summary">
+            <div class="stat-card">
+                <div class="stat-value" style="color: #3498db;">
+                    {{ results|length }}
+                </div>
+                <div class="stat-label">Tests Taken</div>
+            </div>
+            
+            {% set avg_score = results|map(attribute='score')|sum / results|length %}
+            <div class="stat-card">
+                <div class="stat-value" style="color: #27ae60;">
+                    {{ "%.1f"|format(avg_score) }}%
+                </div>
+                <div class="stat-label">Average Score</div>
+            </div>
+            
+            {% set best_score = results|map(attribute='score')|max %}
+            <div class="stat-card">
+                <div class="stat-value" style="color: #f39c12;">
+                    {{ "%.1f"|format(best_score) }}%
+                </div>
+                <div class="stat-label">Best Score</div>
+            </div>
+            
+            {% set total_time = results|map(attribute='time_taken')|sum %}
+            <div class="stat-card">
+                <div class="stat-value" style="color: #9b59b6;">
+                    {{ (total_time // 60)|int }}:{{ "%02d"|format(total_time % 60) }}
+                </div>
+                <div class="stat-label">Total Time</div>
+            </div>
+        </div>
+        
+        <div class="filter-options">
+            <h3 style="margin-bottom: 15px; color: #2c3e50;">Filter Results</h3>
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="sort-by">Sort By:</label>
+                    <select id="sort-by" onchange="sortResults()">
+                        <option value="date-desc">Date (Newest First)</option>
+                        <option value="date-asc">Date (Oldest First)</option>
+                        <option value="score-desc">Score (Highest First)</option>
+                        <option value="score-asc">Score (Lowest First)</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="score-range">Score Range:</label>
+                    <select id="score-range" onchange="filterResults()">
+                        <option value="all">All Scores</option>
+                        <option value="80-100">80-100% (Excellent)</option>
+                        <option value="60-79">60-79% (Good)</option>
+                        <option value="40-59">40-59% (Average)</option>
+                        <option value="0-39">0-39% (Needs Improvement)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="results-history" id="results-container">
+            {% for result in results %}
+            <div class="result-item" data-score="{{ result.score }}" data-date="{{ result.completed_at.timestamp() }}">
+                <div class="result-info">
+                    <div class="result-header">
+                        <div class="result-date">
+                            📅 {{ result.completed_at.strftime('%Y-%m-%d %H:%M') }}
+                        </div>
+                        <div class="result-status">
+                            {% if result.score >= 80 %}
+                                <span style="color: #27ae60; font-weight: bold;">🎉 Excellent</span>
+                            {% elif result.score >= 60 %}
+                                <span style="color: #f39c12; font-weight: bold;">👍 Good</span>
+                            {% elif result.score >= 40 %}
+                                <span style="color: #3498db; font-weight: bold;">📚 Average</span>
+                            {% else %}
+                                <span style="color: #e74c3c; font-weight: bold;">📖 Needs Improvement</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="result-score score-{% if result.score >= 80 %}high{% elif result.score >= 60 %}good{% elif result.score >= 40 %}average{% else %}low{% endif %}">
+                        {{ "%.1f"|format(result.score) }}%
+                    </div>
+                    
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <div class="detail-value" style="color: #27ae60;">
+                                {{ result.correct_answers }}
+                            </div>
+                            <div class="detail-label">Correct</div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-value" style="color: #e74c3c;">
+                                {{ result.total_questions - result.correct_answers }}
+                            </div>
+                            <div class="detail-label">Incorrect</div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-value" style="color: #3498db;">
+                                {{ result.total_questions }}
+                            </div>
+                            <div class="detail-label">Total</div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-value" style="color: #9b59b6;">
+                                {{ (result.time_taken // 60)|int }}:{{ "%02d"|format(result.time_taken % 60) }}
+                            </div>
+                            <div class="detail-label">Time Taken</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-actions">
+                    <a href="{{ url_for('detailed_result', result_id=result.id) }}" class="btn">
+                        📖 View Details
+                    </a>
+                    <a href="{{ url_for('show_result', result_id=result.id) }}" class="btn btn-secondary">
+                        📊 Quick View
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📚</div>
+            <h3>No Test Results Found</h3>
+            <p style="margin: 15px 0 25px 0; font-size: 1.1em; color: #7f8c8d;">
+                You haven't taken any tests yet. Take your first test to see results here.
+            </p>
+            <a href="{{ url_for('index') }}" class="btn" style="font-size: 1.1em; padding: 12px 30px;">
+                🚀 Take Your First Test
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <script>
+        function sortResults() {
+            const sortBy = document.getElementById('sort-by').value;
+            const container = document.getElementById('results-container');
+            const items = Array.from(container.querySelectorAll('.result-item'));
+            
+            items.sort((a, b) => {
+                const aScore = parseFloat(a.dataset.score);
+                const bScore = parseFloat(b.dataset.score);
+                const aDate = parseFloat(a.dataset.date);
+                const bDate = parseFloat(b.dataset.date);
+                
+                switch(sortBy) {
+                    case 'date-desc':
+                        return bDate - aDate;
+                    case 'date-asc':
+                        return aDate - bDate;
+                    case 'score-desc':
+                        return bScore - aScore;
+                    case 'score-asc':
+                        return aScore - bScore;
+                    default:
+                        return 0;
+                }
+            });
+            
+            // Clear and re-append sorted items
+            container.innerHTML = '';
+            items.forEach(item => container.appendChild(item));
+        }
+        
+        function filterResults() {
+            const scoreRange = document.getElementById('score-range').value;
+            const items = document.querySelectorAll('.result-item');
+            
+            items.forEach(item => {
+                const score = parseFloat(item.dataset.score);
+                let show = true;
+                
+                switch(scoreRange) {
+                    case '80-100':
+                        show = score >= 80;
+                        break;
+                    case '60-79':
+                        show = score >= 60 && score < 80;
+                        break;
+                    case '40-59':
+                        show = score >= 40 && score < 60;
+                        break;
+                    case '0-39':
+                        show = score < 40;
+                        break;
+                    default:
+                        show = true;
+                }
+                
+                item.style.display = show ? 'flex' : 'none';
+            });
+        }
+        
+        // Initialize with default sort
+        document.addEventListener('DOMContentLoaded', sortResults);
+    </script>
+</body>
+</html>

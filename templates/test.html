@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word CAT Test</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .test-instructions {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .question-progress {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .progress-dot.current {
+            background-color: #3498db;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .progress-dot.answered {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        .progress-dot.skipped {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .question-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .warning-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="test-header">
+            <h1>Microsoft Word Proficiency Test</h1>
+            <div class="student-info">
+                <p>Student: {{ session.student_info.name }}</p>
+                <p>ID: {{ session.student_info.student_id }}</p>
+                <p>Class: {{ session.student_info.class_name }}</p>
+            </div>
+        </div>
+        
+        <div class="test-controls">
+            <div class="timer">
+                Time Remaining: <span id="timer">45:00</span>
+            </div>
+            <div class="progress">
+                Question: <span id="current-question">1</span>/{{ questions|length }}
+            </div>
+        </div>
+        
+        <div class="test-instructions">
+            <p><strong>Instructions:</strong></p>
+            <ul>
+                <li>Answer all {{ questions|length }} questions</li>
+                <li>You can navigate between questions using Previous/Next buttons</li>
+                <li>Test will auto-submit when time expires</li>
+                <li>Click "Submit Test" when you're done</li>
+                <li>You will see detailed results with explanations after submission</li>
+            </ul>
+        </div>
+        
+        <div class="warning-message" id="warning">
+            You haven't answered this question. Are you sure you want to continue?
+            <button onclick="continueAnyway()" style="margin-left: 10px;">Continue Anyway</button>
+        </div>
+        
+        <div class="question-progress" id="progress-dots">
+            {% for question in questions %}
+            <div class="progress-dot" id="dot-{{ loop.index }}" onclick="goToQuestion({{ loop.index }})">
+                {{ loop.index }}
+            </div>
+            {% endfor %}
+        </div>
+        
+        <form id="test-form">
+            <div id="questions-container">
+                {% for question in questions %}
+                <div class="question-container" id="question-{{ loop.index }}" {% if loop.index > 1 %}style="display:none;"{% endif %}>
+                    <div class="question-header">
+                        <h3>Question {{ loop.index }} of {{ questions|length }}</h3>
+                    </div>
+                    <div class="question-text">
+                        <p>{{ question.question }}</p>
+                    </div>
+                    <div class="options">
+                        {% for option in question.options %}
+                        <div class="option">
+                            <input type="radio" 
+                                   id="q{{ question.id }}_{{ loop.index }}" 
+                                   name="question_{{ question.id }}" 
+                                   value="{{ option }}"
+                                   data-question-id="{{ question.id }}"
+                                   data-question-index="{{ loop.index0 }}">
+                            <label for="q{{ question.id }}_{{ loop.index }}">{{ option }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="question-navigation">
+                <button type="button" id="prev-btn" onclick="prevQuestion()" class="btn btn-secondary" disabled>Previous</button>
+                <div>
+                    <button type="button" id="submit-btn" onclick="validateAndSubmit()" class="btn" style="background-color: #27ae60;">Submit Test</button>
+                    <button type="button" id="next-btn" onclick="nextQuestion()" class="btn">
+                        {% if questions|length == 1 %}Submit{% else %}Next{% endif %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        let currentQuestion = 1;
+        const totalQuestions = {{ questions|length }};
+        let responses = [];
+        let startTime = new Date();
+        let unansweredQuestions = [];
+        
+        // Timer functionality
+        let timeLeft = 45 * 60; // 45 minutes in seconds
+        const timerElement = document.getElementById('timer');
+        
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                submitTest();
+            } else {
+                timeLeft--;
+            }
+        }
+        
+        setInterval(updateTimer, 1000);
+        
+        function updateProgressDots() {
+            for (let i = 1; i <= totalQuestions; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                dot.classList.remove('current', 'answered', 'skipped');
+                
+                if (i === currentQuestion) {
+                    dot.classList.add('current');
+                } else {
+                    const hasAnswer = responses.some(r => {
+                        const questionElement = document.querySelector(`#question-${i}`);
+                        if (!questionElement) return false;
+                        const questionId = questionElement.querySelector('input[type="radio"]').dataset.questionId;
+                        return r.question_id == questionId;
+                    });
+                    
+                    if (hasAnswer) {
+                        dot.classList.add('answered');
+                    } else if (unansweredQuestions.includes(i)) {
+                        dot.classList.add('skipped');
+                    }
+                }
+            }
+        }
+        
+        function saveResponse() {
+            const questionElement = document.querySelector(`#question-${currentQuestion}`);
+            const selectedOption = questionElement.querySelector('input[type="radio"]:checked');
+            
+            if (selectedOption) {
+                const questionId = parseInt(selectedOption.dataset.questionId);
+                const selectedAnswer = selectedOption.value;
+                
+                // Update or add response
+                const existingIndex = responses.findIndex(r => r.question_id == questionId);
+                if (existingIndex >= 0) {
+                    responses[existingIndex].selected_answer = selectedAnswer;
+                } else {
+                    responses.push({
+                        question_id: questionId,
+                        selected_answer: selectedAnswer
+                    });
+                }
+                
+                // Remove from unanswered if it was there
+                const index = unansweredQuestions.indexOf(currentQuestion);
+                if (index > -1) {
+                    unansweredQuestions.splice(index, 1);
+                }
+            } else {
+                // Mark as unanswered
+                if (!unansweredQuestions.includes(currentQuestion)) {
+                    unansweredQuestions.push(currentQuestion);
+                }
+            }
+            
+            updateProgressDots();
+        }
+        
+        function showQuestion(questionNumber) {
+            // Hide all questions
+            for (let i = 1; i <= totalQuestions; i++) {
+                document.getElementById(`question-${i}`).style.display = 'none';
+            }
+            
+            // Show current question
+            document.getElementById(`question-${questionNumber}`).style.display = 'block';
+            document.getElementById('current-question').textContent = questionNumber;
+            currentQuestion = questionNumber;
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = questionNumber === 1;
+            document.getElementById('next-btn').textContent = questionNumber === totalQuestions ? 'Submit' : 'Next';
+            
+            updateProgressDots();
+        }
+        
+        function nextQuestion() {
+            const questionElement = document.querySelector(`#question-${currentQuestion}`);
+            const selectedOption = questionElement.querySelector('input[type="radio"]:checked');
+            
+            if (!selectedOption && !unansweredQuestions.includes(currentQuestion)) {
+                document.getElementById('warning').style.display = 'block';
+                return;
+            }
+            
+            saveResponse();
+            document.getElementById('warning').style.display = 'none';
+            
+            if (currentQuestion < totalQuestions) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            }
+        }
+        
+        function prevQuestion() {
+            if (currentQuestion > 1) {
+                saveResponse();
+                currentQuestion--;
+                showQuestion(currentQuestion);
+                document.getElementById('warning').style.display = 'none';
+            }
+        }
+        
+        function goToQuestion(questionNumber) {
+            saveResponse();
+            showQuestion(questionNumber);
+            document.getElementById('warning').style.display = 'none';
+        }
+        
+        function continueAnyway() {
+            document.getElementById('warning').style.display = 'none';
+            saveResponse();
+            
+            if (currentQuestion < totalQuestions) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            }
+        }
+        
+        function validateAndSubmit() {
+            const unansweredCount = totalQuestions - responses.length;
+            
+            if (unansweredCount > 0) {
+                if (confirm(`You have ${unansweredCount} unanswered question(s). Are you sure you want to submit?`)) {
+                    submitTest();
+                }
+            } else {
+                submitTest();
+            }
+        }
+        
+        async function submitTest() {
+            saveResponse();
+            
+            const timeTaken = Math.floor((new Date() - startTime) / 1000);
+            
+            // Show loading indicator
+            document.getElementById('submit-btn').disabled = true;
+            document.getElementById('submit-btn').textContent = 'Submitting...';
+            
+            try {
+                const response = await fetch('/submit-test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        responses: responses,
+                        time_taken: timeTaken
+                    })
+                });
+                
+                const result = await response.json();
+                
+                // Redirect to detailed results page
+                window.location.href = `/detailed-result/${result.result_id}`;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error submitting test. Please try again.');
+                document.getElementById('submit-btn').disabled = false;
+                document.getElementById('submit-btn').textContent = 'Submit Test';
+            }
+        }
+        
+        // Initialize first question
+        showQuestion(1);
+        updateProgressDots();
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft' && currentQuestion > 1) {
+                prevQuestion();
+            } else if (event.key === 'ArrowRight' && currentQuestion < totalQuestions) {
+                nextQuestion();
+            }
+        });
+    </script>
+</body>
+</html>

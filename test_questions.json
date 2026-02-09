@@ -1,0 +1,242 @@
+[
+    {
+        "id": 1,
+        "question": "What is the shortcut to save a document in Microsoft Word?",
+        "options": ["Ctrl+S", "Ctrl+P", "Ctrl+N", "Ctrl+O"],
+        "correct_answer": "Ctrl+S",
+        "category": "Shortcuts",
+        "explanation": "Ctrl+S is the standard shortcut to save documents in Microsoft Word and most other applications."
+    },
+    {
+        "id": 2,
+        "question": "Which ribbon contains the font formatting options?",
+        "options": ["Home", "Insert", "Page Layout", "View"],
+        "correct_answer": "Home",
+        "category": "Interface",
+        "explanation": "The Home ribbon contains font formatting options like bold, italic, font size, and font color."
+    },
+    {
+        "id": 3,
+        "question": "What does CTRL+B do in Microsoft Word?",
+        "options": ["Bold text", "Italic text", "Underline text", "Bullet points"],
+        "correct_answer": "Bold text",
+        "category": "Shortcuts",
+        "explanation": "Ctrl+B applies bold formatting to selected text or toggles bold on/off at the cursor position."
+    },
+    {
+        "id": 4,
+        "question": "Which feature allows you to see non-printing characters?",
+        "options": ["Show/Hide ¶", "Zoom", "Ruler", "Navigation Pane"],
+        "correct_answer": "Show/Hide ¶",
+        "category": "Formatting",
+        "explanation": "The Show/Hide ¶ button (Ctrl+*) displays non-printing characters like spaces, tabs, and paragraph marks."
+    },
+    {
+        "id": 5,
+        "question": "What is the default file extension for Word documents?",
+        "options": [".docx", ".txt", ".pdf", ".rtf"],
+        "correct_answer": ".docx",
+        "category": "Basics",
+        "explanation": ".docx is the default extension for Word documents since Word 2007."
+    },
+    {
+        "id": 6,
+        "question": "Which tool checks for spelling and grammar errors?",
+        "options": ["Spelling & Grammar", "Thesaurus", "Word Count", "Translate"],
+        "correct_answer": "Spelling & Grammar",
+        "category": "Proofing",
+        "explanation": "The Spelling & Grammar tool (F7) checks your document for spelling and grammar mistakes."
+    },
+    {
+        "id": 7,
+        "question": "What does F7 function key do in Word?",
+        "options": ["Spell check", "Save", "Print", "Help"],
+        "correct_answer": "Spell check",
+        "category": "Shortcuts",
+        "explanation": "F7 opens the Spelling and Grammar checker in Microsoft Word."
+    },
+    {
+        "id": 8,
+        "question": "Which view shows how the document will look when printed?",
+        "options": ["Print Layout", "Read Mode", "Web Layout", "Outline"],
+        "correct_answer": "Print Layout",
+        "category": "View",
+        "explanation": "Print Layout view shows the document as it will appear when printed, with margins, headers, and footers."
+    },
+    {
+        "id": 9,
+        "question": "What is the shortcut to undo an action?",
+        "options": ["Ctrl+Z", "Ctrl+Y", "Ctrl+X", "Ctrl+C"],
+        "correct_answer": "Ctrl+Z",
+        "category": "Shortcuts",
+        "explanation": "Ctrl+Z undoes the last action. You can press it multiple times to undo several actions."
+    },
+    {
+        "id": 10,
+        "question": "Which feature combines multiple documents into one?",
+        "options": ["Mail Merge", "Track Changes", "Compare", "Combine"],
+        "correct_answer": "Mail Merge",
+        "category": "Advanced",
+        "explanation": "Mail Merge combines a main document with a data source to create personalized documents like form letters."
+    },
+    {
+        "id": 11,
+        "question": "What does CTRL+E do?",
+        "options": ["Center align", "Left align", "Right align", "Justify"],
+        "correct_answer": "Center align",
+        "category": "Shortcuts",
+        "explanation": "Ctrl+E centers the selected text or paragraph."
+    },
+    {
+        "id": 12,
+        "question": "Where can you change line spacing?",
+        "options": ["Home ribbon", "Insert ribbon", "Review ribbon", "View ribbon"],
+        "correct_answer": "Home ribbon",
+        "category": "Formatting",
+        "explanation": "Line spacing options are in the Paragraph group of the Home ribbon."
+    },
+    {
+        "id": 13,
+        "question": "What is the shortcut to open the Find dialog?",
+        "options": ["Ctrl+F", "Ctrl+H", "Ctrl+G", "Ctrl+D"],
+        "correct_answer": "Ctrl+F",
+        "category": "Shortcuts",
+        "explanation": "Ctrl+F opens the Navigation pane to search for text in the document."
+    },
+    {
+        "id": 14,
+        "question": "Which feature protects a document with a password?",
+        "options": ["Restrict Editing", "Track Changes", "Document Inspector", "Protect Document"],
+        "correct_answer": "Protect Document",
+        "category": "Security",
+        "explanation": "Protect Document allows you to encrypt the file with a password to restrict access."
+    },
+    {
+        "id": 15,
+        "question": "What does CTRL+SHIFT+> do?",
+        "options": ["Increase font size", "Decrease font size", "Superscript", "Subscript"],
+        "correct_answer": "Increase font size",
+        "category": "Shortcuts",
+        "explanation": "Ctrl+Shift+> increases the font size of selected text by one point."
+    },
+    {
+        "id": 16,
+        "question": "Where is the word count displayed?",
+        "options": ["Status bar", "Title bar", "Quick Access Toolbar", "Ribbon"],
+        "correct_answer": "Status bar",
+        "category": "Interface",
+        "explanation": "The word count is displayed at the bottom left of the Word window in the status bar."
+    },
+    {
+        "id": 17,
+        "question": "What is the shortcut to insert a hyperlink?",
+        "options": ["Ctrl+K", "Ctrl+L", "Ctrl+H", "Ctrl+I"],
+        "correct_answer": "Ctrl+K",
+        "category": "Shortcuts",
+        "explanation": "Ctrl+K opens the Insert Hyperlink dialog box."
+    },
+    {
+        "id": 18,
+        "question": "Which feature allows multiple people to edit a document?",
+        "options": ["Co-authoring", "Track Changes", "Comments", "Compare"],
+        "correct_answer": "Co-authoring",
+        "category": "Collaboration",
+        "explanation": "Co-authoring allows multiple people to work on the same document simultaneously."
+    },
+    {
+        "id": 19,
+        "question": "What does ALT+F4 do?",
+        "options": ["Close Word", "Save document", "New document", "Print document"],
+        "correct_answer": "Close Word",
+        "category": "Shortcuts",
+        "explanation": "Alt+F4 closes the current Word application window."
+    },
+    {
+        "id": 20,
+        "question": "Where can you add headers and footers?",
+        "options": ["Insert ribbon", "Design ribbon", "Layout ribbon", "References ribbon"],
+        "correct_answer": "Insert ribbon",
+        "category": "Formatting",
+        "explanation": "Headers and footers are found in the Insert ribbon under the Header & Footer group."
+    },
+    {
+        "id": 21,
+        "question": "What is the shortcut to print a document?",
+        "options": ["Ctrl+P", "Ctrl+S", "Ctrl+F", "Ctrl+N"],
+        "correct_answer": "Ctrl+P",
+        "category": "Shortcuts",
+        "explanation": "Ctrl+P opens the Print dialog box."
+    },
+    {
+        "id": 22,
+        "question": "Which feature shows changes made to a document?",
+        "options": ["Track Changes", "Comments", "Compare", "Inspect Document"],
+        "correct_answer": "Track Changes",
+        "category": "Review",
+        "explanation": "Track Changes records all modifications made to the document, showing who made each change."
+    },
+    {
+        "id": 23,
+        "question": "What does CTRL+N do?",
+        "options": ["New document", "Open document", "Save document", "Close document"],
+        "correct_answer": "New document",
+        "category": "Shortcuts",
+        "explanation": "Ctrl+N creates a new blank document."
+    },
+    {
+        "id": 24,
+        "question": "Where can you insert a table of contents?",
+        "options": ["References ribbon", "Insert ribbon", "Layout ribbon", "View ribbon"],
+        "correct_answer": "References ribbon",
+        "category": "References",
+        "explanation": "Table of Contents is located in the References ribbon under the Table of Contents group."
+    },
+    {
+        "id": 25,
+        "question": "What is the shortcut for paste special?",
+        "options": ["Ctrl+Alt+V", "Ctrl+Shift+V", "Ctrl+V", "Alt+V"],
+        "correct_answer": "Ctrl+Alt+V",
+        "category": "Shortcuts",
+        "explanation": "Ctrl+Alt+V opens the Paste Special dialog box with various paste options."
+    },
+    {
+        "id": 26,
+        "question": "Which view removes ribbons for easier reading?",
+        "options": ["Read Mode", "Print Layout", "Web Layout", "Draft"],
+        "correct_answer": "Read Mode",
+        "category": "View",
+        "explanation": "Read Mode hides the ribbons and toolbars, showing only the document content for easier reading."
+    },
+    {
+        "id": 27,
+        "question": "What does F12 do?",
+        "options": ["Save As", "Save", "Open", "Print"],
+        "correct_answer": "Save As",
+        "category": "Shortcuts",
+        "explanation": "F12 opens the Save As dialog box to save the document with a new name or format."
+    },
+    {
+        "id": 28,
+        "question": "Where can you change page margins?",
+        "options": ["Layout ribbon", "Design ribbon", "View ribbon", "Home ribbon"],
+        "correct_answer": "Layout ribbon",
+        "category": "Layout",
+        "explanation": "Page margins are found in the Layout ribbon under the Page Setup group."
+    },
+    {
+        "id": 29,
+        "question": "What is the shortcut to select all text?",
+        "options": ["Ctrl+A", "Ctrl+E", "Ctrl+L", "Ctrl+R"],
+        "correct_answer": "Ctrl+A",
+        "category": "Shortcuts",
+        "explanation": "Ctrl+A selects all content in the document."
+    },
+    {
+        "id": 30,
+        "question": "Which feature creates a bibliography?",
+        "options": ["Citations & Bibliography", "Table of Contents", "Index", "Captions"],
+        "correct_answer": "Citations & Bibliography",
+        "category": "References",
+        "explanation": "The Citations & Bibliography tools in the References ribbon help create and manage bibliographies."
+    }
+]
